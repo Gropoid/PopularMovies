@@ -107,7 +107,7 @@ public class MainActivityFragment extends Fragment {
         final RecyclerView.LayoutManager layout  = new GridLayoutManager(getActivity(), GRID_WIDTH);
         rvPosters.setLayoutManager(layout);
         rvPosters.setAdapter(moviesAdapter);
-        //launchUpdate();
+        launchUpdate();
         return v;
     }
 

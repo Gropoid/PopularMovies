@@ -4,13 +4,16 @@
     android:id="@+id/cvPosterRoot"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_margin="2dp"
+
     android:clickable="true"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="8dp">
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardCornerRadius="0dp"
+    card_view:cardElevation="0dp">
 
     <ImageView
         android:id="@+id/ivPoster"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
         android:layout_width="match_parent"
         />
 
