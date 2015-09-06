@@ -7,9 +7,9 @@ import java.util.List;
  */
 public class MovieDbResponseDTO {
     int page;
-    int totalPages;
-    int totalResults;
-    List<MovieDTO> results;
+    int total_pages;
+    int total_results;
+    List<Movie> results;
 
     public MovieDbResponseDTO() {
     }
@@ -22,27 +22,27 @@ public class MovieDbResponseDTO {
         this.page = page;
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public int getTotal_pages() {
+        return total_pages;
     }
 
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
+    public void setTotal_pages(int total_pages) {
+        this.total_pages = total_pages;
     }
 
-    public int getTotalResults() {
-        return totalResults;
+    public int getTotal_results() {
+        return total_results;
     }
 
-    public void setTotalResults(int totalResults) {
-        this.totalResults = totalResults;
+    public void setTotal_results(int total_results) {
+        this.total_results = total_results;
     }
 
-    public List<MovieDTO> getResults() {
+    public List<Movie> getResults() {
         return results;
     }
 
-    public void setResults(List<MovieDTO> results) {
+    public void setResults(List<Movie> results) {
         this.results = results;
     }
 }

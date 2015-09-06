@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by gbe on 9/5/15.
  */
-public class MovieDTO {
+public class Movie {
 //
 //    {
 //      "adult":false,
@@ -28,19 +28,19 @@ public class MovieDTO {
 //      "vote_count":2021
 //    }
     Boolean adult;
-    String backdropPath;
-    List<Integer> genreIds;
+    String backdrop_path;
+    List<Integer> genre_ids;
     int id;
-    String originalLanguage;
-    String originalTitle;
+    String original_language;
+    String original_title;
     String overview;
-    String releaseDate;
-    String posterPath;
+    String release_date;
+    String poster_path;
     float popularity;
     String title;
     Boolean video;
-    float voteAverage;
-    int voteCount;
+    float vote_average;
+    int vote_count;
 
     public Boolean getAdult() {
         return adult;
@@ -50,20 +50,20 @@ public class MovieDTO {
         this.adult = adult;
     }
 
-    public String getBackdropPath() {
-        return backdropPath;
+    public String getBackdrop_path() {
+        return backdrop_path;
     }
 
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
+    public void setBackdrop_path(String backdrop_path) {
+        this.backdrop_path = backdrop_path;
     }
 
-    public List<Integer> getGenreIds() {
-        return genreIds;
+    public List<Integer> getGenre_ids() {
+        return genre_ids;
     }
 
-    public void setGenreIds(List<Integer> genreIds) {
-        this.genreIds = genreIds;
+    public void setGenre_ids(List<Integer> genre_ids) {
+        this.genre_ids = genre_ids;
     }
 
     public int getId() {
@@ -74,20 +74,20 @@ public class MovieDTO {
         this.id = id;
     }
 
-    public String getOriginalLanguage() {
-        return originalLanguage;
+    public String getOriginal_language() {
+        return original_language;
     }
 
-    public void setOriginalLanguage(String originalLanguage) {
-        this.originalLanguage = originalLanguage;
+    public void setOriginal_language(String original_language) {
+        this.original_language = original_language;
     }
 
-    public String getOriginalTitle() {
-        return originalTitle;
+    public String getOriginal_title() {
+        return original_title;
     }
 
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
+    public void setOriginal_title(String original_title) {
+        this.original_title = original_title;
     }
 
     public String getOverview() {
@@ -98,20 +98,20 @@ public class MovieDTO {
         this.overview = overview;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+    public String getRelease_date() {
+        return release_date;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
     }
 
-    public String getPosterPath() {
-        return posterPath;
+    public String getPoster_path() {
+        return poster_path;
     }
 
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
     }
 
     public float getPopularity() {
@@ -138,19 +138,19 @@ public class MovieDTO {
         this.video = video;
     }
 
-    public float getVoteAverage() {
-        return voteAverage;
+    public float getVote_average() {
+        return vote_average;
     }
 
-    public void setVoteAverage(float voteAverage) {
-        this.voteAverage = voteAverage;
+    public void setVote_average(float vote_average) {
+        this.vote_average = vote_average;
     }
 
-    public int getVoteCount() {
-        return voteCount;
+    public int getVote_count() {
+        return vote_count;
     }
 
-    public void setVoteCount(int voteCount) {
-        this.voteCount = voteCount;
+    public void setVote_count(int vote_count) {
+        this.vote_count = vote_count;
     }
 }
