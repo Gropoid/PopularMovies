@@ -78,7 +78,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     }
 
     public void onMovieSelected(Movie movie) {
-        Toast.makeText(mContext, "Selected movie : " + movie.getTitle(), Toast.LENGTH_SHORT).show();
         Intent i = new Intent(mContext, MovieDetailsActivity.class);
         i.putExtra(MovieDetailsActivity.MOVIE_KEY, Parcels.wrap(movie));
         mContext.startActivity(i);
