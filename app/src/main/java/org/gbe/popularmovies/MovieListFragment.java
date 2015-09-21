@@ -3,8 +3,8 @@ package org.gbe.popularmovies;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,16 +32,16 @@ import retrofit.Retrofit;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MovieListFragment extends Fragment {
 
     private static final String TAG = "MainActivityFragment";
-    private static final String MOVIE_DB_URL = "https://api.themoviedb.org";
-    private static final String IMAGE_DB_URL = "http://image.tmdb.org/t/p/";
+    private String movieDbUrl;
+    private String imageDbUrl;
+
+
     private static final String IMAGE_SIZE = "w185";
 
     private static final int GRID_WIDTH = 2;
-
-    OnMovieSelectedListener mCallback;
 
     @Bind(R.id.rvPosters)
     RecyclerView rvPosters;
@@ -60,26 +60,22 @@ public class MainActivityFragment extends Fragment {
 
     MovieDbServiceApi movieDbService;
 
-    public MainActivityFragment() {
+    public MovieListFragment() {
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try
-        {
-            mCallback = (OnMovieSelectedListener)activity;
-        }
-        catch(ClassCastException ex)
-        {
-            throw new ClassCastException(activity.toString() + " must implement OnMovieSelectedListener.");
-        }
+
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        movieDbUrl = getString(R.string.movie_db_url);
+        imageDbUrl = getString(R.string.image_db_url);
+
         setHasOptionsMenu(true);
 
         bestRatedMovies = new ArrayList<>();
@@ -88,7 +84,7 @@ public class MainActivityFragment extends Fragment {
 
         private_key = getActivity().getResources().getString(R.string.themoviedbkey);
         movieDbService = new Retrofit.Builder()
-                .baseUrl(MOVIE_DB_URL)
+                .baseUrl(movieDbUrl)
                 .addConverter(
                         MovieDbResponseDTO.class,
                         GsonConverterFactory.create().get(MovieDbResponseDTO.class)
@@ -101,9 +97,9 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
+        View v = inflater.inflate(R.layout.fragment_movie_list, container, false);
         ButterKnife.bind(this, v);
-        moviesAdapter = new MovieListAdapter(getActivity(), displayedMovies, IMAGE_DB_URL + IMAGE_SIZE);
+        moviesAdapter = new MovieListAdapter(getActivity(), displayedMovies, imageDbUrl + IMAGE_SIZE);
         final RecyclerView.LayoutManager layout  = new GridLayoutManager(getActivity(), GRID_WIDTH);
         rvPosters.setLayoutManager(layout);
         rvPosters.setAdapter(moviesAdapter);
@@ -216,19 +212,23 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<MovieDbResponseDTO> results) {
-            if (results != null) {
-                // 0 == sorted by ratings, 1 == sorted by popularity
-                bestRatedMovies.clear();
-                for (moviedbretrofit.Movie dto : results.get(0).getResults()) {
-                    Log.v(TAG, "Received Movie : " + dto.getTitle());
+            if(results != null && results.size() == 2) {
+                if (results.get(0) != null) {
+                    // 0 == sorted by ratings, 1 == sorted by popularity
+                    bestRatedMovies.clear();
+                    for (moviedbretrofit.Movie dto : results.get(0).getResults()) {
+                        Log.v(TAG, "Received Movie : " + dto.getTitle());
+                    }
+                    bestRatedMovies.addAll(results.get(0).getResults());
                 }
-                bestRatedMovies.addAll(results.get(0).getResults());
-                mostPopularMovies.clear();
-                for (moviedbretrofit.Movie dto : results.get(1).getResults()) {
-                    Log.v(TAG, "Received Movie : " + dto.getTitle());
+                if(results.get(1) != null){
+                    mostPopularMovies.clear();
+                    for (moviedbretrofit.Movie dto : results.get(1).getResults()) {
+                        Log.v(TAG, "Received Movie : " + dto.getTitle());
+                    }
+                    mostPopularMovies.addAll(results.get(1).getResults());
+                    applySortingCriterion();
                 }
-                mostPopularMovies.addAll(results.get(1).getResults());
-                applySortingCriterion();
             }
         }
     }
@@ -249,7 +249,4 @@ public class MainActivityFragment extends Fragment {
         prefs.edit().putString(PREF_SORTING, sortingCriterion).apply();
     }
 
-    public interface OnMovieSelectedListener {
-        void onMovieSelected(Movie movie);
-    }
 }

@@ -2,13 +2,17 @@ package org.gbe.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -23,9 +27,9 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     private Activity mContext;
     private String baseMovieDbUrl;
 
-    public MovieListAdapter(Activity mContext, List<Movie> movies, String baseMovieDbUrl) {
+    public MovieListAdapter(Activity context, List<Movie> movies, String baseMovieDbUrl) {
         this.movies = movies;
-        this.mContext = mContext;
+        this.mContext = context;
         this.baseMovieDbUrl = baseMovieDbUrl;
     }
 
@@ -36,11 +40,25 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     }
 
     @Override
-    public void onBindViewHolder(MovieViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final MovieViewHolder viewHolder, int position) {
         // Recycle view
         Movie movie = movies.get(position);
         viewHolder.rootView.setTag(movie);
-        Picasso.with(mContext).load(baseMovieDbUrl + movie.getPoster_path()).into(viewHolder.ivPoster);
+        Picasso.with(mContext)
+                .load(baseMovieDbUrl + movie.getPoster_path())
+                .error(R.drawable.videostatic)
+                .placeholder(R.drawable.progress_wheel_animation)
+                .fit()
+                .noFade()
+                .centerInside()
+                .into(viewHolder.ivPoster);
+        viewHolder.rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Movie m = (Movie)viewHolder.rootView.getTag();
+                onMovieSelected(m);
+            }
+        });
     }
 
     @Override
@@ -57,5 +75,12 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
             ivPoster = (ImageView)itemView.findViewById(R.id.ivPoster);
             //TODO : add click handler here
         }
+    }
+
+    public void onMovieSelected(Movie movie) {
+        Toast.makeText(mContext, "Selected movie : " + movie.getTitle(), Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(mContext, MovieDetailsActivity.class);
+        i.putExtra(MovieDetailsActivity.MOVIE_KEY, Parcels.wrap(movie));
+        mContext.startActivity(i);
     }
 }
