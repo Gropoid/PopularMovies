@@ -2,20 +2,18 @@ package org.gbe.popularmovies;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +23,7 @@ import moviedbretrofit.Movie;
 import moviedbretrofit.MovieDbResponseDTO;
 import moviedbretrofit.MovieDbServiceApi;
 import retrofit.Call;
+import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -55,6 +54,9 @@ public class MovieListFragment extends Fragment {
     private List<Movie> mostPopularMovies;
     private List<Movie> bestRatedMovies;
     private List<Movie> displayedMovies;
+
+    private Call<MovieDbResponseDTO> mCallByPopularity;
+    private Call<MovieDbResponseDTO> mCallByRatings;
 
     private String private_key; // in non-submitted res/values/private_key.xml
 
@@ -91,7 +93,6 @@ public class MovieListFragment extends Fragment {
                 )
                 .build()
                 .create(MovieDbServiceApi.class);
-        //launchUpdate();
     }
 
     @Override
@@ -103,7 +104,7 @@ public class MovieListFragment extends Fragment {
         final RecyclerView.LayoutManager layout  = new GridLayoutManager(getActivity(), GRID_WIDTH);
         rvPosters.setLayoutManager(layout);
         rvPosters.setAdapter(moviesAdapter);
-        launchUpdate();
+        fetchData();
         return v;
     }
 
@@ -143,7 +144,7 @@ public class MovieListFragment extends Fragment {
             applySortingCriterion();
         }
         if (id == R.id.debug_button) {
-            launchUpdate();
+            fetchData();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -164,79 +165,56 @@ public class MovieListFragment extends Fragment {
         moviesAdapter.notifyDataSetChanged();
     }
 
-    // TODO : Why can't I use String instead of Object ??
-    private class FetchMoviesTask extends AsyncTask<Object, Void, List<MovieDbResponseDTO>> {
-
-        @Override
-        protected List<MovieDbResponseDTO> doInBackground(Object... params) {
-            if ( movieDbService ==  null) {
-                return null;
-            }
-            List<MovieDbResponseDTO> responses = new ArrayList<MovieDbResponseDTO>();
-            // TODO : switch to async calls
-            Call<MovieDbResponseDTO> c0 = movieDbService.getMostPopularMovies(
-                    private_key,
-                    MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING);
-            Call<MovieDbResponseDTO> c1 = movieDbService.getMostPopularMovies(
-                    private_key,
-                    MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING);
-            try {
-                Response<MovieDbResponseDTO> r =  c0.execute();
-                if (r.isSuccess()) {
-                    MovieDbResponseDTO dto = r.body();
-                    Log.v(TAG, "Succesfull call ! Response length : " + dto.getResults().size());
-                    responses.add(0, dto);
-                } else {
-                    responses.add(0, null);
-                }
-            } catch (IOException ex){
-                Log.e(TAG, "Call execution failed!\n" + ex.getStackTrace().toString());
-                responses.add(0, null);
+    void fetchMoviesByPopularity() {
+        mCallByPopularity = movieDbService.getMostPopularMovies(private_key,
+                        MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING);
+        mCallByPopularity.enqueue(new Callback<MovieDbResponseDTO>() {
+            @Override
+            public void onResponse(Response<MovieDbResponseDTO> response) {
+                mostPopularMovies.clear();
+                mostPopularMovies.addAll(response.body().getResults());
+                applySortingCriterion();
             }
 
-            try {
-                Response<MovieDbResponseDTO> r =  c1.execute();
-                if (r.isSuccess()) {
-                    MovieDbResponseDTO dto = r.body();
-                    Log.v(TAG, "Succesfull call ! Response length : " + dto.getResults().size());
-                    responses.add(1, dto);
-                } else {
-                    responses.add(1, null);
-                }
-            } catch (IOException ex){
-                Log.e(TAG, "Call execution failed!\n" + ex.getStackTrace().toString());
-                responses.add(1, null);
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getActivity(),
+                        "Failed retrieving movies by popularity. Please check your internet connection",
+                        Toast.LENGTH_LONG).show();
             }
-            return responses;
-        }
-
-        @Override
-        protected void onPostExecute(List<MovieDbResponseDTO> results) {
-            if(results != null && results.size() == 2) {
-                if (results.get(0) != null) {
-                    // 0 == sorted by ratings, 1 == sorted by popularity
-                    bestRatedMovies.clear();
-                    for (moviedbretrofit.Movie dto : results.get(0).getResults()) {
-                        Log.v(TAG, "Received Movie : " + dto.getTitle());
-                    }
-                    bestRatedMovies.addAll(results.get(0).getResults());
-                }
-                if(results.get(1) != null){
-                    mostPopularMovies.clear();
-                    for (moviedbretrofit.Movie dto : results.get(1).getResults()) {
-                        Log.v(TAG, "Received Movie : " + dto.getTitle());
-                    }
-                    mostPopularMovies.addAll(results.get(1).getResults());
-                    applySortingCriterion();
-                }
-            }
-        }
+        });
     }
 
-    public void launchUpdate() {
-        AsyncTask t = new FetchMoviesTask();
-        String arg = MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING;
-        t.execute();
+    void fetchMoviesByRatings() {
+        mCallByRatings = movieDbService.getMostPopularMovies(private_key, MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING);
+        mCallByRatings.enqueue(new Callback<MovieDbResponseDTO>() {
+            @Override
+            public void onResponse(Response<MovieDbResponseDTO> response) {
+                bestRatedMovies.clear();
+                bestRatedMovies.addAll(response.body().getResults());
+                applySortingCriterion();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getActivity(),
+                        "Failed retrieving movies by ratings. Please check your internet connection",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mCallByPopularity != null)
+            mCallByPopularity.cancel();
+        if(mCallByRatings != null)
+        mCallByRatings.cancel();
+    }
+    public void fetchData() {
+        fetchMoviesByPopularity();
+        fetchMoviesByRatings();
     }
 
     private void loadPreferences() {
