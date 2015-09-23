@@ -23,5 +23,4 @@ public interface MovieDbServiceApi {
             @Query("api_key") String apiKey,
             @Query("sort_by") String sortBy
     );
-
 }

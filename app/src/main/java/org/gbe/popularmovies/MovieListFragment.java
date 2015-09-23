@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +40,10 @@ import retrofit.Retrofit;
 public class MovieListFragment extends Fragment {
 
     private static final String TAG = "MainActivityFragment";
+    private static final String MOST_POPULAR_MOVIES_KEY = "MostPopularMoviesKey";
+    private static final String BEST_RATED_MOVIES_KEY = "BestRatedMoviesKey";
     private String movieDbUrl;
     private String imageDbUrl;
-
 
     private static final String IMAGE_SIZE = "w185";
 
@@ -85,6 +90,12 @@ public class MovieListFragment extends Fragment {
         bestRatedMovies = new ArrayList<>();
         mostPopularMovies = new ArrayList<>();
         displayedMovies = new ArrayList<>();
+
+        if( savedInstanceState != null ) {
+            // requires Parceler 0.2.7 or above to work :
+            bestRatedMovies = Parcels.unwrap(savedInstanceState.getParcelable(BEST_RATED_MOVIES_KEY));
+            mostPopularMovies = Parcels.unwrap(savedInstanceState.getParcelable(MOST_POPULAR_MOVIES_KEY));
+        }
 
         private_key = getActivity().getResources().getString(R.string.themoviedbkey);
         movieDbService = new Retrofit.Builder()
@@ -139,6 +150,15 @@ public class MovieListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle b) {
+        super.onSaveInstanceState(b);
+
+        // requires Parceler 0.2.7 or above to work :
+        b.putParcelable(MOST_POPULAR_MOVIES_KEY, Parcels.wrap(mostPopularMovies));
+        b.putParcelable(BEST_RATED_MOVIES_KEY, Parcels.wrap(bestRatedMovies));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.sort_by_popularity) {
@@ -178,16 +198,21 @@ public class MovieListFragment extends Fragment {
         mCallByPopularity.enqueue(new Callback<MovieDbResponseDTO>() {
             @Override
             public void onResponse(Response<MovieDbResponseDTO> response) {
-                mostPopularMovies.clear();
-                mostPopularMovies.addAll(response.body().getResults());
-                applySortingCriterion();
+                if (getView() != null) {
+                    mostPopularMovies.clear();
+                    mostPopularMovies.addAll(response.body().getResults());
+                    applySortingCriterion();
+                }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(getActivity(),
-                        "Failed retrieving movies by popularity. Please check your internet connection",
-                        Toast.LENGTH_LONG).show();
+                if (getView() != null) {
+                    Toast.makeText(getActivity(),
+                            "Failed retrieving movies by popularity. Please check your internet connection",
+                            Toast.LENGTH_LONG).show();
+                    applySortingCriterion();
+                }
             }
         });
     }
@@ -197,16 +222,21 @@ public class MovieListFragment extends Fragment {
         mCallByRatings.enqueue(new Callback<MovieDbResponseDTO>() {
             @Override
             public void onResponse(Response<MovieDbResponseDTO> response) {
-                bestRatedMovies.clear();
-                bestRatedMovies.addAll(response.body().getResults());
-                applySortingCriterion();
+                if (getView() != null) {
+                    bestRatedMovies.clear();
+                    bestRatedMovies.addAll(response.body().getResults());
+                    applySortingCriterion();
+                }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(getActivity(),
-                        "Failed retrieving movies by ratings. Please check your internet connection",
-                        Toast.LENGTH_LONG).show();
+                if (getView() != null) {
+                    Toast.makeText(getActivity(),
+                            "Failed retrieving movies by ratings. Please check your internet connection",
+                            Toast.LENGTH_LONG).show();
+                    applySortingCriterion();
+                }
             }
         });
     }

@@ -139,7 +139,7 @@ public class Movie {
     public void setVote_count(int vote_count) {
         this.vote_count = vote_count;
     }
-
+}
 // Legacy Parcelable implementation (pre-Parceler)
 //
 //    @Override
@@ -194,7 +194,7 @@ public class Movie {
 //            return new Movie[size];
 //        }
 //    };
-}
+
 
 
 //
