@@ -65,15 +65,14 @@
             android:layout_alignParentStart="true" />
     </ScrollView>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ib_favorite"
-        android:backgroundTint="#00000000"
-        android:src="@drawable/favorite_selector"
+    <ToggleButton
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:id="@+id/tb_favorite"
+        android:textOn=""
+        android:textOff=""
+        android:background="@drawable/favorite_selector"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/scrollView"
-        android:layout_toRightOf="@+id/scrollView"
-        android:layout_toEndOf="@+id/scrollView" />
+        android:layout_below="@id/tv_details_ratings_average"/>
 
 </RelativeLayout>

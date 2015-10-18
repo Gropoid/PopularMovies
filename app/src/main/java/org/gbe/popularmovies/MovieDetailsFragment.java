@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
 
@@ -14,6 +16,7 @@ import org.parceler.Parcels;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import moviedbretrofit.Movie;
 
 /**
@@ -41,6 +44,9 @@ public class MovieDetailsFragment extends Fragment {
 
     @Bind(R.id.iv_details_poster)
     ImageView ivPoster;
+
+    @Bind(R.id.tb_favorite)
+    ToggleButton tbFavorite;
 
     public MovieDetailsFragment() {
     }
@@ -84,5 +90,10 @@ public class MovieDetailsFragment extends Fragment {
         MovieDetailsFragment f = new MovieDetailsFragment();
         f.setArguments(b);
         return f;
+    }
+
+    @OnClick(R.id.tb_favorite)
+    void onFavoriteClicked() {
+
     }
 }
