@@ -46,11 +46,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/iv_details_poster">
+        android:layout_below="@+id/iv_details_poster"
+        android:fillViewport="false"
+        android:layout_toLeftOf="@+id/tv_details_ratings_average"
+        android:layout_toStartOf="@+id/tv_details_ratings_average">
 
         <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,5 +61,17 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
     </ScrollView>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:backgroundTint="#00000000"
+        android:src="@drawable/favorite_selector"
+        android:layout_alignRight="@+id/iv_details_poster"
+        android:layout_alignEnd="@+id/iv_details_poster"
+        android:layout_alignTop="@+id/scrollView"
+        android:layout_toRightOf="@+id/scrollView"
+        android:layout_toEndOf="@+id/scrollView" />
 
 </RelativeLayout>

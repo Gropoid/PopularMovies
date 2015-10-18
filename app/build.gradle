@@ -50,7 +50,6 @@ dependencies {
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
     compile 'org.parceler:parceler-api:0.2.7'
     apt 'org.parceler:parceler:0.2.7'
-
 }
 
 
