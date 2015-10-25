@@ -7,7 +7,7 @@ import android.view.View;
 import org.parceler.Parcels;
 
 import butterknife.Bind;
-import moviedbretrofit.Movie;
+import model.Movie;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 

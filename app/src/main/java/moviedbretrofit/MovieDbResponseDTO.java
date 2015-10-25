@@ -2,6 +2,8 @@ package moviedbretrofit;
 
 import java.util.List;
 
+import model.Movie;
+
 /**
  * Created by gbe on 9/5/15.
  */

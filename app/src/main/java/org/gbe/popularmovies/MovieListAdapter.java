@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -16,7 +15,7 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
-import moviedbretrofit.Movie;
+import model.Movie;
 
 /**
  * Created by gbe on 9/5/15.

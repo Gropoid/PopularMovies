@@ -5,4 +5,5 @@
     <string name="title_activity_movie_details">MovieDetailsActivity</string>
     <string name="movie_db_url">https://api.themoviedb.org</string>
     <string name="image_db_url">http://image.tmdb.org/t/p/</string>
+    <string name="sql_error_message">SQL Error !</string>
 </resources>
