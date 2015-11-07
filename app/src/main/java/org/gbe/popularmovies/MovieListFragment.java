@@ -1,6 +1,7 @@
 package org.gbe.popularmovies;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,15 +18,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+
 import org.parceler.Parcels;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import data.DatabaseHelper;
+import data.MovieDao;
 import model.Movie;
 import moviedbretrofit.MovieDbResponseDTO;
+import moviedbretrofit.MovieDbService;
 import moviedbretrofit.MovieDbServiceApi;
 import retrofit.Call;
 import retrofit.Callback;
@@ -37,9 +45,11 @@ import retrofit.Retrofit;
  */
 public class MovieListFragment extends Fragment {
 
-    private static final String TAG = "MainActivityFragment";
+    private static final String TAG = "MovieListFragment";
     private static final String MOST_POPULAR_MOVIES_KEY = "MostPopularMoviesKey";
     private static final String BEST_RATED_MOVIES_KEY = "BestRatedMoviesKey";
+    private static final String FAVORITES = "FAVORITES";
+    private static final String FAVORITE_MOVIES_KEY = "FavoriteMoviesKey";
     private String movieDbUrl;
     private String imageDbUrl;
 
@@ -49,6 +59,8 @@ public class MovieListFragment extends Fragment {
 
     @Bind(R.id.rvPosters)
     RecyclerView rvPosters;
+    private Menu menu;
+
 
     MovieListAdapter moviesAdapter;
 
@@ -58,6 +70,7 @@ public class MovieListFragment extends Fragment {
 
     private List<Movie> mostPopularMovies;
     private List<Movie> bestRatedMovies;
+    private List<Movie> favoriteMovies;
     private List<Movie> displayedMovies;
 
     private Call<MovieDbResponseDTO> mCallByPopularity;
@@ -65,7 +78,11 @@ public class MovieListFragment extends Fragment {
 
     private String private_key; // in non-submitted res/values/private_key.xml
 
+    // Singletons
     MovieDbServiceApi movieDbService;
+    DatabaseHelper databaseHelper;
+    MovieDao movieDao;
+
 
     public MovieListFragment() {
     }
@@ -80,30 +97,30 @@ public class MovieListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        movieDbUrl = getString(R.string.movie_db_url);
         imageDbUrl = getString(R.string.image_db_url);
+        private_key = getString(R.string.themoviedbkey);
 
         setHasOptionsMenu(true);
 
         bestRatedMovies = new ArrayList<>();
         mostPopularMovies = new ArrayList<>();
+        favoriteMovies = new ArrayList<>();
         displayedMovies = new ArrayList<>();
 
-        if( savedInstanceState != null ) {
+        if (savedInstanceState != null) {
             // requires Parceler 0.2.7 or above to work :
             bestRatedMovies = Parcels.unwrap(savedInstanceState.getParcelable(BEST_RATED_MOVIES_KEY));
             mostPopularMovies = Parcels.unwrap(savedInstanceState.getParcelable(MOST_POPULAR_MOVIES_KEY));
+            favoriteMovies = Parcels.unwrap(savedInstanceState.getParcelable(FAVORITE_MOVIES_KEY));
         }
 
-        private_key = getActivity().getResources().getString(R.string.themoviedbkey);
-        movieDbService = new Retrofit.Builder()
-                .baseUrl(movieDbUrl)
-                .addConverter(
-                        MovieDbResponseDTO.class,
-                        GsonConverterFactory.create().get(MovieDbResponseDTO.class)
-                )
-                .build()
-                .create(MovieDbServiceApi.class);
+        movieDbService = MovieDbService.getInstance(getActivity());
+        try {
+            databaseHelper = OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
+            movieDao = databaseHelper.getMovieDao();
+        } catch (SQLException exc) {
+            handleSQLError(exc);
+        }
     }
 
     @Override
@@ -120,17 +137,17 @@ public class MovieListFragment extends Fragment {
                     new GridLayoutManager(getActivity(), GRID_WIDTH));
         }
         rvPosters.setAdapter(moviesAdapter);
-        fetchData();
+
         return v;
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -139,6 +156,7 @@ public class MovieListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loadPreferences();
+        fetchData();
     }
 
     @Override
@@ -154,6 +172,7 @@ public class MovieListFragment extends Fragment {
         // requires Parceler 0.2.7 or above to work :
         b.putParcelable(MOST_POPULAR_MOVIES_KEY, Parcels.wrap(mostPopularMovies));
         b.putParcelable(BEST_RATED_MOVIES_KEY, Parcels.wrap(bestRatedMovies));
+        b.putParcelable(FAVORITE_MOVIES_KEY, Parcels.wrap(favoriteMovies));
     }
 
     @Override
@@ -168,6 +187,10 @@ public class MovieListFragment extends Fragment {
             sortingCriterion = MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING;
             applySortingCriterion();
         }
+        if (id == R.id.show_favorites) {
+            sortingCriterion = FAVORITES;
+            applySortingCriterion();
+        }
         if (id == R.id.debug_button) {
             fetchData();
         }
@@ -178,21 +201,24 @@ public class MovieListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main_fragment, menu);
+        this.menu = menu;
     }
 
     private void applySortingCriterion() {
         displayedMovies.clear();
         if (MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING.equals(sortingCriterion)) {
             displayedMovies.addAll(mostPopularMovies);
-        }else if(MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING.equals(sortingCriterion)) {
+        } else if (MovieDbServiceApi.SORT_BY.VOTE_AVERAGE_DESCENDING.equals(sortingCriterion)) {
             displayedMovies.addAll(bestRatedMovies);
+        } else if (FAVORITES.equals(sortingCriterion)) {
+            displayedMovies.addAll(favoriteMovies);
         }
         moviesAdapter.notifyDataSetChanged();
     }
 
     void fetchMoviesByPopularity() {
         mCallByPopularity = movieDbService.getMostPopularMovies(private_key,
-                        MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING);
+                MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING);
         mCallByPopularity.enqueue(new Callback<MovieDbResponseDTO>() {
             @Override
             public void onResponse(Response<MovieDbResponseDTO> response) {
@@ -239,27 +265,50 @@ public class MovieListFragment extends Fragment {
         });
     }
 
+    void fetchFavoriteMovies() {
+        try {
+            favoriteMovies.clear();
+            favoriteMovies.addAll(movieDao.findAllFavorites());
+        } catch (SQLException e) {
+          Log.e(TAG, "Error retrieving favorites", e);
+            Toast.makeText(getActivity(), "SQL error while retrieving Favorites", Toast.LENGTH_LONG).show();
+            //menu.findItem(R.id.show_favorites).setVisible(false);
+        }
+        if (favoriteMovies.size() > 0) {
+            //menu.findItem(R.id.show_favorites).setVisible(true);
+        } else {
+            //menu.findItem(R.id.show_favorites).setVisible(false);
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mCallByPopularity != null)
+        if (mCallByPopularity != null)
             mCallByPopularity.cancel();
-        if(mCallByRatings != null)
-        mCallByRatings.cancel();
+        if (mCallByRatings != null)
+            mCallByRatings.cancel();
     }
+
     public void fetchData() {
         fetchMoviesByPopularity();
         fetchMoviesByRatings();
+        fetchFavoriteMovies();
     }
 
     private void loadPreferences() {
-        SharedPreferences prefs = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         sortingCriterion = prefs.getString(PREF_SORTING, MovieDbServiceApi.SORT_BY.POPULARITY_DESCENDING);
     }
 
     private void savePreferences() {
-        SharedPreferences prefs = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         prefs.edit().putString(PREF_SORTING, sortingCriterion).apply();
+    }
+
+    private void handleSQLError(SQLException exc) {
+        Log.e(TAG, exc.getLocalizedMessage() + "\n" + exc.getSQLState());
+        Toast.makeText(getActivity(), R.string.sql_error_message, Toast.LENGTH_LONG).show();
     }
 
 }

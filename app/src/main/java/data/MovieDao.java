@@ -3,6 +3,7 @@ package data;
 import com.j256.ormlite.dao.BaseDaoImpl;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 import model.Movie;
 
@@ -12,8 +13,12 @@ public class MovieDao extends BaseDaoImpl<Movie, Long> {
         super(dataClass);
     }
 
-    public Movie findById(Long id) throws SQLException{
+    public Movie findById(Long id) throws SQLException {
         return queryForId(id);
+    }
+
+    public Collection<Movie> findAllFavorites() throws SQLException {
+        return queryForEq("isFavorite", true);
     }
 
     @Override

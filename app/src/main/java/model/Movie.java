@@ -31,6 +31,8 @@ public class Movie {
     @DatabaseField float vote_average;
     @DatabaseField int vote_count;
 
+    @DatabaseField Boolean isFavorite = false;
+
     public Boolean getIsFavorite() {
         return isFavorite;
     }
@@ -38,9 +40,6 @@ public class Movie {
     public void setIsFavorite(Boolean isFavorite) {
         this.isFavorite = isFavorite;
     }
-
-
-    @DatabaseField Boolean isFavorite = false;
 
     public Movie() {}
 
