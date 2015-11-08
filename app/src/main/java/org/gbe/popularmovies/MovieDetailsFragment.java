@@ -30,7 +30,9 @@ import butterknife.OnClick;
 import data.DatabaseHelper;
 import data.MovieDao;
 import model.Movie;
+import model.Review;
 import model.Video;
+import moviedbretrofit.MovieDbReviewsDTO;
 import moviedbretrofit.MovieDbService;
 import moviedbretrofit.MovieDbServiceApi;
 import moviedbretrofit.MovieDbVideosDTO;
@@ -38,9 +40,6 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MovieDetailsFragment extends Fragment {
 
     private static final String MY_MOVIE_KEY = "my_movie_key";
@@ -71,7 +70,8 @@ public class MovieDetailsFragment extends Fragment {
     @Bind(R.id.tb_favorite)
     ToggleButton tbFavorite;
 
-    MenuItem miPlayVideo;
+    private MenuItem miPlayVideo;
+    private MenuItem miReadReviews;
 
     private List<Video> videos;
 
@@ -79,6 +79,8 @@ public class MovieDetailsFragment extends Fragment {
     private MovieDbServiceApi movieDbService;
 
     private MovieListActivity hostActivity;
+    private List<Review> reviews;
+
 
     public MovieDetailsFragment() {
     }
@@ -112,7 +114,7 @@ public class MovieDetailsFragment extends Fragment {
         getMovieInfoFromDb();
         videos = new ArrayList<>();
         fetchVideos();
-
+        reviews = new ArrayList<>();
         fetchReviews();
         assignFields();
         return v;
@@ -129,10 +131,6 @@ public class MovieDetailsFragment extends Fragment {
         }
     }
 
-    private void fetchReviews() {
-
-    }
-
     private void fetchVideos() {
         Call<MovieDbVideosDTO> videoListCall = movieDbService.getTrailers(mMovie.getId(), private_key);
         videoListCall.enqueue(new Callback<MovieDbVideosDTO>() {
@@ -142,12 +140,13 @@ public class MovieDetailsFragment extends Fragment {
                 if (dto != null) {
                     List<Video> videoList = dto.getResults();
                     if (videoList != null) {
-                        videos.clear();
-                        videos.addAll(videoList);
-                        if (videos.size() > 0) {
-                            Toast.makeText(getActivity(), "success", Toast.LENGTH_LONG).show();
-                            showPlayVideoMenuItem();
-                            return;
+                        if (getView() != null) {
+                            videos.clear();
+                            videos.addAll(videoList);
+                            if (videos.size() > 0) {
+                                showPlayVideoMenuItem();
+                                return;
+                            }
                         }
                     }
                 }
@@ -156,11 +155,58 @@ public class MovieDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(getActivity(), "Error retrieving video list", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Error retrieving video list", t);
-                hidePlayVideoMenuItem();
+                if (getView() != null) {
+                    Toast.makeText(getActivity(), "Error retrieving video list", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Error retrieving video list", t);
+                    hidePlayVideoMenuItem();
+                }
             }
         });
+    }
+
+    private void fetchReviews() {
+        Call<MovieDbReviewsDTO> reviewListCall = movieDbService.getReviews(mMovie.getId(), private_key);
+        reviewListCall.enqueue(new Callback<MovieDbReviewsDTO>() {
+            @Override
+            public void onResponse(Response<MovieDbReviewsDTO> response) {
+                MovieDbReviewsDTO dto = response.body();
+                if ( dto != null){
+                    List<Review> reviewList = dto.getResults();
+                    if (reviewList != null) {
+                        if (getView() != null) {
+                            reviews.clear();
+                            reviews.addAll(reviewList);
+                            if (reviews.size() > 0) {
+                                showReadReviewsMenuItem();
+                                return;
+                            }
+                        }
+                    }
+                }
+                hideReadReviewsMenuItem();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                if (getView() != null) {
+                    Toast.makeText(getActivity(), "Error retrieving reviews list", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Error retrieving reviews list", t);
+                    hideReadReviewsMenuItem();
+                }
+            }
+        });
+    }
+
+    private void hideReadReviewsMenuItem() {
+        if(miReadReviews != null) {
+            miReadReviews.setVisible(false);
+        }
+    }
+
+    private void showReadReviewsMenuItem() {
+        if (miReadReviews != null ) {
+            miReadReviews.setVisible(true);
+        }
     }
 
     private void showPlayVideoMenuItem() {
@@ -239,7 +285,7 @@ public class MovieDetailsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.play_video) {
+        if (id == R.id.play_videos) {
             hostActivity.displayVideoFragment(videos);
         }
         return super.onOptionsItemSelected(item);
@@ -251,7 +297,8 @@ public class MovieDetailsFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_movie_details, menu);
-        miPlayVideo = menu.findItem(R.id.play_video);
+        miPlayVideo = menu.findItem(R.id.play_videos);
+        miReadReviews = menu.findItem(R.id.read_reviews);
     }
 
     @Override

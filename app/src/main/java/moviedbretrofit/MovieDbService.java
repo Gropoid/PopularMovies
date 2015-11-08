@@ -24,6 +24,10 @@ public class MovieDbService {
                             MovieDbVideosDTO.class,
                             GsonConverterFactory.create().get(MovieDbVideosDTO.class)
                     )
+                    .addConverter(
+                            MovieDbReviewsDTO.class,
+                            GsonConverterFactory.create().get(MovieDbReviewsDTO.class)
+                    )
                     .build().create(MovieDbServiceApi.class);
         }
         return _movieDbService;

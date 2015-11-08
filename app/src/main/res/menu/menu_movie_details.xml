@@ -3,9 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
-    <item android:id="@+id/play_video"
-        android:title="Play video"
+    <item android:id="@+id/play_videos"
+        android:title="Play videos"
         android:orderInCategory="200"
         app:showAsAction="always"
         android:icon="@android:drawable/ic_media_play"/>
+    <item android:id="@+id/read_reviews"
+        android:title="Read reviews"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_zoom"/>
 </menu>

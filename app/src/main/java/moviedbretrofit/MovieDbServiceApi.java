@@ -1,17 +1,11 @@
 package moviedbretrofit;
 
-import java.util.Collection;
-import java.util.List;
-
-import model.Video;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-/**
- * Created by gbe on 9/5/15.
- */
+
 public interface MovieDbServiceApi {
 
      final class SORT_BY{
@@ -33,6 +27,11 @@ public interface MovieDbServiceApi {
     Call<MovieDbVideosDTO> getTrailers(
             @Path("id") long id,
             @Query("api_key") String apiKey
+    );
 
+    @GET("/3/movie/{id}/reviews")
+    Call<MovieDbReviewsDTO> getReviews(
+            @Path("id") long id,
+            @Query("api_key") String apiKey
     );
 }
