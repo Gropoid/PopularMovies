@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,13 +36,8 @@ import moviedbretrofit.MovieDbService;
 import moviedbretrofit.MovieDbServiceApi;
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
 import retrofit.Response;
-import retrofit.Retrofit;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MovieListFragment extends Fragment {
 
     private static final String TAG = "MovieListFragment";
@@ -50,7 +45,6 @@ public class MovieListFragment extends Fragment {
     private static final String BEST_RATED_MOVIES_KEY = "BestRatedMoviesKey";
     private static final String FAVORITES = "FAVORITES";
     private static final String FAVORITE_MOVIES_KEY = "FavoriteMoviesKey";
-    private String movieDbUrl;
     private String imageDbUrl;
 
     private static final String IMAGE_SIZE = "w185";
@@ -60,7 +54,6 @@ public class MovieListFragment extends Fragment {
     @Bind(R.id.rvPosters)
     RecyclerView rvPosters;
     private Menu menu;
-
 
     MovieListAdapter moviesAdapter;
 
@@ -83,6 +76,7 @@ public class MovieListFragment extends Fragment {
     DatabaseHelper databaseHelper;
     MovieDao movieDao;
 
+    private MovieListActivity mHostActivity;
 
     public MovieListFragment() {
     }
@@ -90,7 +84,12 @@ public class MovieListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
+        try {
+            mHostActivity = (MovieListActivity) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must be a MovieListActivity");
+        }
     }
 
 
@@ -128,7 +127,7 @@ public class MovieListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_movie_list, container, false);
         ButterKnife.bind(this, v);
-        moviesAdapter = new MovieListAdapter(getActivity(), displayedMovies, imageDbUrl + IMAGE_SIZE);
+        moviesAdapter = new MovieListAdapter(mHostActivity, displayedMovies, imageDbUrl + IMAGE_SIZE);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             rvPosters.setLayoutManager(
                     new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -137,7 +136,6 @@ public class MovieListFragment extends Fragment {
                     new GridLayoutManager(getActivity(), GRID_WIDTH));
         }
         rvPosters.setAdapter(moviesAdapter);
-
         return v;
     }
 
@@ -150,7 +148,6 @@ public class MovieListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
 
     @Override
     public void onResume() {
@@ -270,7 +267,7 @@ public class MovieListFragment extends Fragment {
             favoriteMovies.clear();
             favoriteMovies.addAll(movieDao.findAllFavorites());
         } catch (SQLException e) {
-          Log.e(TAG, "Error retrieving favorites", e);
+            Log.e(TAG, "Error retrieving favorites", e);
             Toast.makeText(getActivity(), "SQL error while retrieving Favorites", Toast.LENGTH_LONG).show();
             //menu.findItem(R.id.show_favorites).setVisible(false);
         }
@@ -311,4 +308,7 @@ public class MovieListFragment extends Fragment {
         Toast.makeText(getActivity(), R.string.sql_error_message, Toast.LENGTH_LONG).show();
     }
 
+    public static MovieListFragment newInstance() {
+        return new MovieListFragment();
+    }
 }

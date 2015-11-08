@@ -1,9 +1,7 @@
 package org.gbe.popularmovies;
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +22,6 @@ import org.parceler.Parcels;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import butterknife.Bind;
@@ -81,6 +78,8 @@ public class MovieDetailsFragment extends Fragment {
     private String private_key;
     private MovieDbServiceApi movieDbService;
 
+    private MovieListActivity hostActivity;
+
     public MovieDetailsFragment() {
     }
 
@@ -117,6 +116,17 @@ public class MovieDetailsFragment extends Fragment {
         fetchReviews();
         assignFields();
         return v;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            hostActivity = (MovieListActivity)activity;
+        } catch ( ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must be a MovieListActivity");
+        }
     }
 
     private void fetchReviews() {
@@ -230,28 +240,11 @@ public class MovieDetailsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.play_video) {
-            sendVideoIntent();
+            hostActivity.displayVideoFragment(videos);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void sendVideoIntent() {
-        if (videos.size() > 0) {
-            watchYoutubeVideo(videos.get(0).getKey());
-        }
-        Toast.makeText(getActivity(), "Send Video intent", Toast.LENGTH_LONG).show();
-    }
-
-    private void watchYoutubeVideo(String id){
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
-            startActivity(intent);
-        } catch (ActivityNotFoundException ex) {
-            Intent intent=new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.youtube.com/watch?v="+id));
-            startActivity(intent);
-        }
-    }
 
 
     @Override

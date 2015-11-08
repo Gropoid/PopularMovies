@@ -1,8 +1,6 @@
 package org.gbe.popularmovies;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,25 +9,21 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
 
 import java.util.List;
 
 import model.Movie;
 
-/**
- * Created by gbe on 9/5/15.
- */
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieViewHolder> {
 
     private List<Movie> movies;
-    private Activity mContext;
+    private MovieListActivity mContext;
     private String baseMovieDbUrl;
 
-    public MovieListAdapter(Activity context, List<Movie> movies, String baseMovieDbUrl) {
+    public MovieListAdapter(MovieListActivity context, List<Movie> movies, String baseMovieDbUrl) {
         this.movies = movies;
-        this.mContext = context;
         this.baseMovieDbUrl = baseMovieDbUrl;
+        this.mContext = context;
     }
 
     @Override
@@ -40,7 +34,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     @Override
     public void onBindViewHolder(final MovieViewHolder viewHolder, int position) {
-        // Recycle view
         Movie movie = movies.get(position);
         viewHolder.rootView.setTag(movie);
         Picasso.with(mContext)
@@ -72,13 +65,10 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
             super(itemView);
             rootView = itemView;
             ivPoster = (ImageView)itemView.findViewById(R.id.ivPoster);
-            //TODO : add click handler here
         }
     }
 
     public void onMovieSelected(Movie movie) {
-        Intent i = new Intent(mContext, MovieDetailsActivity.class);
-        i.putExtra(MovieDetailsActivity.MOVIE_KEY, Parcels.wrap(movie));
-        mContext.startActivity(i);
+        mContext.displayMovieDetailsFragment(movie);
     }
 }

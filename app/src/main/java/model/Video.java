@@ -2,10 +2,6 @@ package model;
 
 import org.parceler.Parcel;
 
-/**
- * Created by geraud on 07/11/15.
- */
-
 /*{
         "id": "533ec654c3a36854480003eb",
         "iso_639_1": "en",
@@ -26,6 +22,12 @@ public class Video {
     private String site;
     private int size;
     private String trailer;
+
+    // Used by ArrayAdapter
+    @Override
+    public String toString() {
+        return name;
+    }
 
     public String getId() {
         return id;

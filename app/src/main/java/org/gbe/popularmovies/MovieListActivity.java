@@ -1,29 +1,87 @@
 package org.gbe.popularmovies;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.widget.FrameLayout;
 
+import java.util.List;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import model.Movie;
+import model.Video;
 
-public class MovieListActivity extends AppCompatActivity{
+public class MovieListActivity extends AppCompatActivity
+implements MovieListActivityInterface{
 
     private static final String TAG = "MainActivity";
+    private static final String MOVIE_LIST_FRAGMENT = "MOVIE_LIST_FRAGMENT";
+    private static final String MOVIE_DETAILS_FRAGMENT = "MOVIE_DETAILS_FRAGMENT";
+    private static final String VIDEOS_FRAGMENT = "VIDEOS_FRAGMENT";
+
+    @Bind(R.id.movie_list_main_frame)
+    FrameLayout flMainFrame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
-
         ButterKnife.bind(this);
+        displayMovieListFragment();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
+    public void displayMovieListFragment() {
+        if(getFragmentManager().findFragmentByTag(MOVIE_LIST_FRAGMENT) == null) {
+            MovieListFragment f = MovieListFragment.newInstance();
+            getFragmentManager().beginTransaction().add(R.id.movie_list_main_frame, f, MOVIE_LIST_FRAGMENT).commit();
+        }
+    }
 
+    public void displayVideoFragment(List<Video> videos) {
+        VideoFragment f = VideoFragment.newInstance(videos);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.movie_list_main_frame, f, VIDEOS_FRAGMENT)
+                .addToBackStack("le_videolist")
+                .commit();
+    }
+
+    @Override
+    public void displayMovieDetailsFragment(Movie movie) {
+        MovieDetailsFragment f = MovieDetailsFragment.newInstance(movie);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.movie_list_main_frame, f, MOVIE_DETAILS_FRAGMENT)
+                .addToBackStack("le_movie")
+                .commit();
+    }
+
+
+    public void onVideoClicked(Video video) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + video.getKey()));
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://www.youtube.com/watch?v="+video.getKey()));
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            this.finish();
+        } else {
+            getFragmentManager().popBackStack();
+        }
+    }
 }
