@@ -19,7 +19,7 @@ import org.gbe.popularmovies.model.Review;
 import org.gbe.popularmovies.model.Video;
 
 public class MovieListActivity extends AppCompatActivity
-implements MovieListActivityInterface{
+        implements MovieListActivityInterface {
 
     private static final String TAG = "MainActivity";
     private static final String MOVIE_LIST_FRAGMENT = "MOVIE_LIST_FRAGMENT";
@@ -45,7 +45,7 @@ implements MovieListActivityInterface{
     }
 
     public void displayMovieListFragment() {
-        if(getFragmentManager().findFragmentByTag(MOVIE_LIST_FRAGMENT) == null) {
+        if (getFragmentManager().findFragmentByTag(MOVIE_LIST_FRAGMENT) == null) {
             MovieListFragment f = MovieListFragment.newInstance();
             getFragmentManager().beginTransaction().add(R.id.movie_list_main_frame, f, MOVIE_LIST_FRAGMENT).commit();
         }
@@ -53,19 +53,33 @@ implements MovieListActivityInterface{
 
     public void displayVideoFragment(List<Video> videos) {
         VideoFragment f = VideoFragment.newInstance(videos);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.movie_list_main_frame, f, VIDEOS_FRAGMENT)
-                .addToBackStack("le_videolist")
-                .commit();
+        if (!isTablet()) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_list_main_frame, f, VIDEOS_FRAGMENT)
+                    .addToBackStack("le_videolist")
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_right_panel, f, VIDEOS_FRAGMENT)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override
     public void displayMovieDetailsFragment(Movie movie) {
         MovieDetailsFragment f = MovieDetailsFragment.newInstance(movie);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.movie_list_main_frame, f, MOVIE_DETAILS_FRAGMENT)
-                .addToBackStack("le_movie")
-                .commit();
+        if (!isTablet()) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_list_main_frame, f, MOVIE_DETAILS_FRAGMENT)
+                    .addToBackStack("le_movie")
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_right_panel, f, MOVIE_DETAILS_FRAGMENT)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
 
@@ -75,7 +89,7 @@ implements MovieListActivityInterface{
             startActivity(intent);
         } catch (ActivityNotFoundException ex) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.youtube.com/watch?v="+video.getKey()));
+                    Uri.parse("http://www.youtube.com/watch?v=" + video.getKey()));
             startActivity(intent);
         }
     }
@@ -91,10 +105,17 @@ implements MovieListActivityInterface{
 
     public void displayReviewsFragment(List<Review> reviews) {
         ReviewFragment f = ReviewFragment.newInstance(reviews);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.movie_list_main_frame, f, REVIEWS_FRAGMENT)
-                .addToBackStack("le_reviews")
-                .commit();
+        if (!isTablet()) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_list_main_frame, f, REVIEWS_FRAGMENT)
+                    .addToBackStack("le_reviews")
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_right_panel, f, REVIEWS_FRAGMENT)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     private boolean isTablet() {
