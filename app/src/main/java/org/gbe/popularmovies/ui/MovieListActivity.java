@@ -96,4 +96,8 @@ implements MovieListActivityInterface{
                 .addToBackStack("le_reviews")
                 .commit();
     }
+
+    private boolean isTablet() {
+        return getResources().getBoolean(R.bool.isTablet);
+    }
 }

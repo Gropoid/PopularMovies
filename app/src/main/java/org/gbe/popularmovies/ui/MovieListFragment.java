@@ -129,15 +129,28 @@ public class MovieListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_movie_list, container, false);
         ButterKnife.bind(this, v);
         moviesAdapter = new MovieListAdapter(mHostActivity, displayedMovies, imageDbUrl + IMAGE_SIZE);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (isTablet()) {
             rvPosters.setLayoutManager(
-                    new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        } else {
-            rvPosters.setLayoutManager(
-                    new GridLayoutManager(getActivity(), GRID_WIDTH));
+                    new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        }else {
+            if (isInLandscapeMode()) {
+                rvPosters.setLayoutManager(
+                        new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+            } else {
+                rvPosters.setLayoutManager(
+                        new GridLayoutManager(getActivity(), GRID_WIDTH));
+            }
         }
         rvPosters.setAdapter(moviesAdapter);
         return v;
+    }
+
+    private boolean isInLandscapeMode() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    private boolean isTablet() {
+        return getResources().getBoolean(R.bool.isTablet);
     }
 
     @Override
