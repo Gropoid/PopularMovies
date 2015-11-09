@@ -86,11 +86,11 @@ public class MovieListActivity extends AppCompatActivity
     public void onVideoClicked(Video video) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + video.getKey()));
-            startActivity(intent);
+            startActivity(Intent.createChooser(intent, "Play video"));
         } catch (ActivityNotFoundException ex) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://www.youtube.com/watch?v=" + video.getKey()));
-            startActivity(intent);
+            startActivity(Intent.createChooser(intent, "Play video"));
         }
     }
 
