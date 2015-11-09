@@ -1,20 +1,16 @@
-package data;
+package org.gbe.popularmovies.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.j256.ormlite.android.AndroidConnectionSource;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import org.gbe.popularmovies.R;
-
 import java.sql.SQLException;
 
-import model.Movie;
+import org.gbe.popularmovies.model.Movie;
 
 /**
  * Created by geraud on 25/10/15.

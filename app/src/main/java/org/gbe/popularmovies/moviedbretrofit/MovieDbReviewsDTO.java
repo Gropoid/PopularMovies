@@ -1,8 +1,8 @@
-package moviedbretrofit;
+package org.gbe.popularmovies.moviedbretrofit;
 
 
 import java.util.List;
-import model.Review;
+import org.gbe.popularmovies.model.Review;
 
 public class MovieDbReviewsDTO {
     int id;

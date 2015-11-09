@@ -1,4 +1,4 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,12 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import org.gbe.popularmovies.R;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Video;
+import org.gbe.popularmovies.model.Video;
 
 public class VideoFragment extends Fragment implements AbsListView.OnItemClickListener {
 

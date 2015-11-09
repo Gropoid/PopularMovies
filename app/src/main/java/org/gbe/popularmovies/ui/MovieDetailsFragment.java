@@ -1,4 +1,4 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -18,6 +18,7 @@ import android.widget.ToggleButton;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.squareup.picasso.Picasso;
 
+import org.gbe.popularmovies.R;
 import org.parceler.Parcels;
 
 import java.sql.SQLException;
@@ -27,15 +28,15 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import data.DatabaseHelper;
-import data.MovieDao;
-import model.Movie;
-import model.Review;
-import model.Video;
-import moviedbretrofit.MovieDbReviewsDTO;
-import moviedbretrofit.MovieDbService;
-import moviedbretrofit.MovieDbServiceApi;
-import moviedbretrofit.MovieDbVideosDTO;
+import org.gbe.popularmovies.data.DatabaseHelper;
+import org.gbe.popularmovies.data.MovieDao;
+import org.gbe.popularmovies.model.Movie;
+import org.gbe.popularmovies.model.Review;
+import org.gbe.popularmovies.model.Video;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbReviewsDTO;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbService;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbServiceApi;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbVideosDTO;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;

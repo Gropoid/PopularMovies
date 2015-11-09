@@ -1,4 +1,4 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import model.Movie;
+import org.gbe.popularmovies.R;
+import org.gbe.popularmovies.model.Movie;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieViewHolder> {
 

@@ -1,4 +1,4 @@
-package model;
+package org.gbe.popularmovies.model;
 
 import org.parceler.Parcel;
 

@@ -1,8 +1,8 @@
-package moviedbretrofit;
+package org.gbe.popularmovies.moviedbretrofit;
 
 import java.util.List;
 
-import model.Movie;
+import org.gbe.popularmovies.model.Movie;
 
 /**
  * Created by gbe on 9/5/15.

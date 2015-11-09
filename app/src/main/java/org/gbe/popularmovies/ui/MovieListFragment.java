@@ -1,4 +1,4 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import org.gbe.popularmovies.R;
 import org.parceler.Parcels;
 
 import java.sql.SQLException;
@@ -28,12 +29,12 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import data.DatabaseHelper;
-import data.MovieDao;
-import model.Movie;
-import moviedbretrofit.MovieDbResponseDTO;
-import moviedbretrofit.MovieDbService;
-import moviedbretrofit.MovieDbServiceApi;
+import org.gbe.popularmovies.data.DatabaseHelper;
+import org.gbe.popularmovies.data.MovieDao;
+import org.gbe.popularmovies.model.Movie;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbResponseDTO;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbService;
+import org.gbe.popularmovies.moviedbretrofit.MovieDbServiceApi;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;

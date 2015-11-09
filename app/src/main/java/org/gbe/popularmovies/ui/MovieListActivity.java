@@ -1,4 +1,4 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -12,8 +12,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import model.Movie;
-import model.Video;
+
+import org.gbe.popularmovies.R;
+import org.gbe.popularmovies.model.Movie;
+import org.gbe.popularmovies.model.Video;
 
 public class MovieListActivity extends AppCompatActivity
 implements MovieListActivityInterface{

@@ -1,13 +1,14 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import org.gbe.popularmovies.R;
 import org.parceler.Parcels;
 
 import butterknife.Bind;
-import model.Movie;
+import org.gbe.popularmovies.model.Movie;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 

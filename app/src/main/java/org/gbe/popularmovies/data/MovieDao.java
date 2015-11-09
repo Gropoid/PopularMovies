@@ -1,11 +1,11 @@
-package data;
+package org.gbe.popularmovies.data;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
-import model.Movie;
+import org.gbe.popularmovies.model.Movie;
 
 public class MovieDao extends BaseDaoImpl<Movie, Long> {
 

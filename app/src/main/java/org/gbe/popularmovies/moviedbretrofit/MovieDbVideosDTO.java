@@ -1,8 +1,8 @@
-package moviedbretrofit;
+package org.gbe.popularmovies.moviedbretrofit;
 
 import java.util.List;
 
-import model.Video;
+import org.gbe.popularmovies.model.Video;
 
 public class MovieDbVideosDTO {
     private int id;

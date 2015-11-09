@@ -1,4 +1,4 @@
-package model;
+package org.gbe.popularmovies.model;
 
 
 import com.j256.ormlite.field.DatabaseField;

@@ -1,4 +1,4 @@
-package moviedbretrofit;
+package org.gbe.popularmovies.moviedbretrofit;
 
 import retrofit.Call;
 import retrofit.http.GET;

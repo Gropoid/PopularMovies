@@ -1,9 +1,9 @@
-package org.gbe.popularmovies;
+package org.gbe.popularmovies.ui;
 
 import java.util.List;
 
-import model.Movie;
-import model.Video;
+import org.gbe.popularmovies.model.Movie;
+import org.gbe.popularmovies.model.Video;
 
 public interface MovieListActivityInterface {
     void displayVideoFragment(List<Video> videos);

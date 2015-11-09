@@ -1,10 +1,9 @@
-package moviedbretrofit;
+package org.gbe.popularmovies.moviedbretrofit;
 
 import android.content.Context;
 
 import org.gbe.popularmovies.R;
 
-import model.Movie;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 

@@ -1,4 +1,4 @@
-package model;
+package org.gbe.popularmovies.model;
 
 import org.parceler.Parcel;
 
@@ -15,13 +15,13 @@ import org.parceler.Parcel;
 
 @Parcel
 public class Video {
-    private String id;
-    private String iso_639_1;
-    private String key;
-    private String name;
-    private String site;
-    private int size;
-    private String trailer;
+    String id;
+    String iso_639_1;
+    String key;
+    String name;
+    String site;
+    int size;
+    String trailer;
 
     // Used by ArrayAdapter
     @Override
