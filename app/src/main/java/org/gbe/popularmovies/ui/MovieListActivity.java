@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 
 import org.gbe.popularmovies.R;
 import org.gbe.popularmovies.model.Movie;
+import org.gbe.popularmovies.model.Review;
 import org.gbe.popularmovies.model.Video;
 
 public class MovieListActivity extends AppCompatActivity
@@ -24,6 +25,7 @@ implements MovieListActivityInterface{
     private static final String MOVIE_LIST_FRAGMENT = "MOVIE_LIST_FRAGMENT";
     private static final String MOVIE_DETAILS_FRAGMENT = "MOVIE_DETAILS_FRAGMENT";
     private static final String VIDEOS_FRAGMENT = "VIDEOS_FRAGMENT";
+    private static final String REVIEWS_FRAGMENT = "REVIEWS_FRAGMENT";
 
     @Bind(R.id.movie_list_main_frame)
     FrameLayout flMainFrame;
@@ -85,5 +87,13 @@ implements MovieListActivityInterface{
         } else {
             getFragmentManager().popBackStack();
         }
+    }
+
+    public void displayReviewsFragment(List<Review> reviews) {
+        ReviewFragment f = ReviewFragment.newInstance(reviews);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.movie_list_main_frame, f, REVIEWS_FRAGMENT)
+                .addToBackStack("le_reviews")
+                .commit();
     }
 }

@@ -289,6 +289,9 @@ public class MovieDetailsFragment extends Fragment {
         if (id == R.id.play_videos) {
             hostActivity.displayVideoFragment(videos);
         }
+        if (id == R.id.read_reviews) {
+            hostActivity.displayReviewsFragment(reviews);
+        }
         return super.onOptionsItemSelected(item);
     }
 
