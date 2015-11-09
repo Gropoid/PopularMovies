@@ -20,6 +20,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     private List<Movie> movies;
     private MovieListActivity mContext;
     private String baseMovieDbUrl;
+    private View selectedView;
 
     public MovieListAdapter(MovieListActivity context, List<Movie> movies, String baseMovieDbUrl) {
         this.movies = movies;
@@ -49,6 +50,11 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
             @Override
             public void onClick(View v) {
                 final Movie m = (Movie)viewHolder.rootView.getTag();
+                if (selectedView != null) {
+                    selectedView.setSelected(false);
+                }
+                v.setSelected(true);
+                selectedView = v;
                 onMovieSelected(m);
             }
         });
